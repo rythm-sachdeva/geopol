@@ -1,0 +1,76 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+env/
+venv/
+ENV/
+.venv/
+.Python
+
+# Django specific
+*.log
+*.pot
+*.pyc
+*.pyo
+*.sqlite3
+db.sqlite3
+
+# Local development settings
+.env
+.env.local
+.env.*.local
+
+# Media and static files
+/media/
+/staticfiles/
+
+# Ignore compiled files
+*.so
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# JetBrains IDEs
+.idea/
+
+# VS Code
+.vscode/
+
+# MyPy
+.mypy_cache/
+
+# Pytest
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Docker
+*.log
+*.pid
+*.seed
+*.cover
+*.tox
+*.pytest_cache
+
+# Node.js
+node_modules/
+npm-debug.log*
+
+# Ansible
+*.retry
