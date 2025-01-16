@@ -5,6 +5,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from datetime import datetime,timedelta
+from channels.db import database_sync_to_async
 
 User = get_user_model()
 
@@ -32,6 +33,16 @@ class JWTAuthentication(BaseAuthentication):
         current_time = datetime.utcnow().timestamp()
         if current_time>expiration:
             raise ExpiredSignatureError("Token has expired")
+    
+    @database_sync_to_async
+    def authenticate_websocket(self,scope,token):
+        try:
+            payload = jwt.decode(token,settings.SECRET_KEY,algorithms=['HS256'])
+            user_id = payload.get('id')
+            user = User.objects.get(id=user_id)
+            return user
+        except (InvalidTokenError,ExpiredSignatureError,User.DoesNotExist):
+            raise AuthenticationFailed("Invalid Token")
 
         
 
