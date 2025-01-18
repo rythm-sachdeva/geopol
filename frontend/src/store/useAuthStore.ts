@@ -6,7 +6,8 @@ export const useAuthStore = create(
             authUser: null,
             isLogginIn:false,
             isSigningUp:false,
-            
+            logout:false,
+
 
             isCheckingAuth: true,
             changeCheckingAuth : ()=>set((state:any)=>({isCheckingAuth:!state}))
