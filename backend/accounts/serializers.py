@@ -36,7 +36,7 @@ class LoginSerialiser(serializers.Serializer):
         
         user = authenticate(email=email,password=password)
         if user is None:
-            raise serializers.ValidationError("A user with this email and password was not found.")
+            raise serializers.ValidationError("Invalid Email or Password")
         
 
         return {

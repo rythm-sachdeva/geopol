@@ -7,7 +7,7 @@ import AuthImagePattern from "../components/AuthImagePattern";
 
 
 const LoginPage = () => {
-  const { isSigningUp} = useAuthStore() as any;
+  const { isLogginIn,loginFunc} = useAuthStore() as any;
    const [showPassword,setShowPassword] = useState<boolean>(false)
   const [formData,setFormdata] = useState<loginForm>({
     email:"",
@@ -16,6 +16,7 @@ const LoginPage = () => {
   const validateForm = ()=>{}
   const handleSubmit = (e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault()
+    loginFunc(formData)
   }
 
 
@@ -89,8 +90,8 @@ const LoginPage = () => {
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary w-full" disabled={isSigningUp}>
-              {isSigningUp ? (
+            <button type="submit" className="btn btn-primary w-full" disabled={isLogginIn}>
+              {isLogginIn ? (
                 <>
                   <Loader2 className="size-5 animate-spin" />
                   Loading...

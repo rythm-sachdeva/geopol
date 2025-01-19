@@ -7,7 +7,7 @@ import AuthImagePattern from "../components/AuthImagePattern";
 
 
 const SignupPage = () => {
-  const { isSigningUp } = useAuthStore();
+  const { isSigningUp} = useAuthStore() as any;
    const [showPassword,setShowPassword] = useState<boolean>(false)
   const [formData,setFormdata] = useState<signupForm>({
     fullName:"",

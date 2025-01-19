@@ -8,3 +8,14 @@ export interface loginForm{
     email : string,
     password:string
 }
+
+interface User {
+    email: string;
+    id: string;
+  }
+  
+export interface LoginResponse {
+    message: string;
+    token: string;
+    user: User;
+  }
