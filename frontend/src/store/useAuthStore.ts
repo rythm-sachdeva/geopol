@@ -1,7 +1,8 @@
 import axios from "axios";
+import { LogOut } from "lucide-react";
 import toast from "react-hot-toast";
 import { create } from "zustand";
-import { LoginResponse } from "../lib/types";
+// import { LoginResponse } from "../lib/types";
 
 export const useAuthStore = create(
     (set)=>(
@@ -10,6 +11,25 @@ export const useAuthStore = create(
             isLogginIn:false,
             isSigningUp:false,
             logout:false,
+            logoutFunc: ()=>{
+              set({authUser:null}),
+              localStorage.removeItem("token")
+              set({logout:false})
+            },
+            setUserDetails: async(token:any)=>{
+              try {
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/me/`,{
+                  headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+              })
+              set({authUser:res.data})
+              return res.data
+            } catch (error) {
+              console.log(error)
+            }
+            },
 
 
             isCheckingAuth: true,
@@ -21,7 +41,7 @@ export const useAuthStore = create(
                   {
                     const res : any = await axios.post(`${import.meta.env.VITE_API_URL}/accounts/login/`,data)
                   set({authUser:res.data?.user})
-                  console.log(res.data.token)
+                  // console.log(res.data.token)
                   localStorage.setItem("token",res.data?.token)
                   toast.success("Logged In Successfully")
                   }

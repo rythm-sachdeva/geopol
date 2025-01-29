@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { loginForm } from "../lib/types"
 import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare, User } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthImagePattern from "../components/AuthImagePattern";
 
 
@@ -13,10 +13,13 @@ const LoginPage = () => {
     email:"",
     password:""
   })
+  const navigate = useNavigate();
   const validateForm = ()=>{}
   const handleSubmit = (e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault()
-    loginFunc(formData)
+    loginFunc(formData).then(()=>{
+      navigate(`/`)
+    })
   }
 
 
