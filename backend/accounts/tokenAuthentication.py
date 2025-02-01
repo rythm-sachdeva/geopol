@@ -13,16 +13,21 @@ class JWTAuthentication(BaseAuthentication):
 
     def authenticate(self,request):
         token = self.extract_token(request)
+        # print(token)
         if token is None:
             return None
         
         try:
             payload = jwt.decode(token,settings.SECRET_KEY,algorithms=['HS256'])
+            self.verify_token(payload)
+            # print(payload)
             user_id = payload.get('id')
             user = User.objects.get(id=user_id)
             return (user,token)
-        except (InvalidTokenError,ExpiredSignatureError,User.DoesNotExist):
-            raise AuthenticationFailed("Invalid Token")
+        except (InvalidTokenError, ExpiredSignatureError):
+           raise AuthenticationFailed("Invalid or expired token")
+        except User.DoesNotExist:
+           raise AuthenticationFailed("User does not exist")
 
 
 
@@ -37,7 +42,7 @@ class JWTAuthentication(BaseAuthentication):
     @database_sync_to_async
     def authenticate_websocket(self,scope,token):
         try:
-            payload = jwt.decode(token,settings.SECRET_KEY,algorithms=['HS256'])
+            payload = jwt.decode(token,settings.SECRET_KEY,algorithms='HS256')
             user_id = payload.get('id')
             user = User.objects.get(id=user_id)
             return user
@@ -56,6 +61,7 @@ class JWTAuthentication(BaseAuthentication):
     def generate_token(payload):
         expiration = datetime.utcnow() + timedelta(hours=24)
         payload['exp'] = expiration
+        # print(settings.SECRET_KEY)
         token = jwt.encode(payload,settings.SECRET_KEY,algorithm='HS256')
         return token
     

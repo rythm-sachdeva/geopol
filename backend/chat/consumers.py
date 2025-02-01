@@ -27,9 +27,9 @@ class PersonalChatConsumer(AsyncJsonWebsocketConsumer):
         data = json.loads(text_data)
         print(data)
         username = data['email']
-        reciever = data['reciever']
+        reciever = self.scope['url_route']['kwargs']['id']
         message = data['message']
-        await self.save_message(username, self.room_group_name, message, reciever)
+        await self.save_message(self.scope['user'], self.room_group_name, message, reciever)
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -52,13 +52,13 @@ class PersonalChatConsumer(AsyncJsonWebsocketConsumer):
         await self.send(text_data=json.dumps({'message':message}))
     
     @database_sync_to_async
-    def save_message(self, username, thread_name, message, receiver):
+    def save_message(self, user, thread_name, message, receiver):
+        receiver_User = User.objects.get(id=receiver)
         chat_obj = ChatModel.objects.create(
-            sender=username, message=message, thread_name=thread_name)
+            sender=user, message=message, thread_name=thread_name,reciever=receiver_User)
         other_user_id = self.scope['url_route']['kwargs']['id']
         get_user = User.objects.get(id=other_user_id)
         if receiver == get_user.email:
-            print("Inside If")
             NotificationModel.objects.create(chat=chat_obj, user=get_user)
 
 

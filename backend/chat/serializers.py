@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from .models import ChatModel
 
 
 class GetUserSerializer(serializers.ModelSerializer):
@@ -8,6 +9,12 @@ class GetUserSerializer(serializers.ModelSerializer):
         fields = ['email', 'id', 'first_name', 'last_name']
         extra_kwargs = {'id': {'read_only': True}}
 
+class ChatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChatModel
+        fields = ['sender', 'message', 'reciever','time_stamp']
+        extra_kwargs = {'time_stamp': {'read_only': True}}
+    
 
 
 

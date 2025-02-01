@@ -15,8 +15,9 @@ class UserProfileModel(models.Model):
 
 
 class ChatModel(models.Model):
-    sender = models.CharField(max_length=100, null=True, blank=True)
+    sender = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sender')
     message = models.TextField(null=True, blank=True)
+    reciever = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reciever')
     thread_name= models.CharField(max_length=100, null=True, blank=True)
     time_stamp = models.DateTimeField(auto_now_add=True)
 
