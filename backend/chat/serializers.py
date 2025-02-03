@@ -12,9 +12,8 @@ class GetUserSerializer(serializers.ModelSerializer):
 class ChatSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChatModel
-        fields = ['sender', 'message', 'reciever','time_stamp']
+        fields = ['sender', 'message', 'reciever','time_stamp','id']
         extra_kwargs = {'time_stamp': {'read_only': True}}
-    
 
 
 
