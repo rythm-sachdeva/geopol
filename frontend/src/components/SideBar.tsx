@@ -18,6 +18,7 @@ const SideBar = () => {
     {
         return <SidebarSkeleton/>
     }
+    // console.log(authUser)
 
   return (
    <aside className="h-full w-20 lg:w-72  border-r border-base-200 flex flex-col transition-all duration-200">

@@ -1,11 +1,14 @@
 import { useChatStore } from "../store/useChatStore";
-import { useEffect, useRef } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import MessageSkeleton from "./skeletons/MessageSkeleton";
 import { useAuthStore } from "../store/useAuthStore";
 import { formatMessageTime } from "../lib/utils";
+import { MessagingManager } from "../lib/WebSoketClient";
+import { Send } from "lucide-react";
+
 
 const ChatContainer = () => {
   const {
@@ -13,18 +16,50 @@ const ChatContainer = () => {
     getMessages,
     isMessagesLoading,
     selectedUser,
+    setMessages
   } = useChatStore() as any;
   const { authUser } = useAuthStore() as any;
   const messageEndRef = useRef(null);
+  const [text,setText] = useState<string>("");
 
   useEffect(() => {
-    getMessages(selectedUser.id);
+    if (selectedUser?.id) {
+      const messagingManager = MessagingManager.getInstance(selectedUser.id,setMessages);
+      
+      try {
+        getMessages(selectedUser.id);
+      } catch (error) {
+        console.error('Failed to fetch messages:', error);
+      }
+     
+      
+  
+      return () => {
+        try {
+          MessagingManager.destroy();
+        } catch (error) {
+          console.error('Failed to destroy messaging manager:', error);
+        }
+      };
+    }
+  }, [selectedUser?.id]);
 
-    // subscribeToMessages();
+  const handleSendMessage = (event:FormEvent<HTMLFormElement>)=>
+    {
+      event.preventDefault()
+    const instance =  MessagingManager.getInstance(selectedUser.id,setMessages)
+    instance.sendMessage(
+      {
+        "message":text,
+        "reciever":selectedUser.email,
+        "email":authUser.email
+      }
+     
+    )
+    setText("")
 
-    // return () => unsubscribeFromMessages();
-  }, [selectedUser.id, getMessages]);
 
+    }
   useEffect(() => {
     if (messageEndRef.current && messages) {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -36,7 +71,24 @@ const ChatContainer = () => {
       <div className="flex-1 flex flex-col overflow-auto">
         <ChatHeader />
         <MessageSkeleton />
-        <ChatInput />
+        <div className="p-4 w-full">
+      <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+        <input
+          type="text"
+          className="w-full input input-bordered rounded-lg input-sm sm:input-md"
+          placeholder="Type a message..."
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
+        <button
+          type="submit"
+          className="btn btn-sm btn-circle"
+          disabled={!text.trim()}
+        >
+          <Send size={22} />
+        </button>
+      </form>
+    </div>
       </div>
     );
   }
@@ -83,7 +135,24 @@ const ChatContainer = () => {
         ))}
       </div>
 
-      <ChatInput/>
+      <div className="p-4 w-full">
+      <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+        <input
+          type="text"
+          className="w-full input input-bordered rounded-lg input-sm sm:input-md"
+          placeholder="Type a message..."
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
+        <button
+          type="submit"
+          className="btn btn-sm btn-circle"
+          disabled={!text.trim()}
+        >
+          <Send size={22} />
+        </button>
+      </form>
+    </div>
     </div>
   );
 };

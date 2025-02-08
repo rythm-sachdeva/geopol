@@ -4,19 +4,27 @@ import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare, User } from "lucide-re
 import { useAuthStore } from "../store/useAuthStore";
 import { Link } from "react-router-dom";
 import AuthImagePattern from "../components/AuthImagePattern";
+import { useNavigate } from "react-router-dom";
 
 
 const SignupPage = () => {
-  const { isSigningUp} = useAuthStore() as any;
+  const { isSigningUp,signingUpFunc} = useAuthStore() as any;
    const [showPassword,setShowPassword] = useState<boolean>(false)
   const [formData,setFormdata] = useState<signupForm>({
-    fullName:"",
+    first_name:"",
+    last_name:"",    
     email:"",
     password:""
   })
+  const [fullName,setFullName] = useState<string>("");
+
   const validateForm = ()=>{}
+  const navigate = useNavigate();
   const handleSubmit = (e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault()
+    signingUpFunc(formData).then(()=>{
+      navigate(`/login`)
+    })
   }
 
 
@@ -53,8 +61,10 @@ const SignupPage = () => {
                   type="text"
                   className={`input input-bordered w-full pl-10`}
                   placeholder="John Doe"
-                  value={formData.fullName}
-                  onChange={(e) => setFormdata({ ...formData, fullName: e.target.value })}
+                  value={fullName}
+                  onChange={(e) => {
+                    setFullName(e.target.value)
+                    setFormdata({ ...formData, first_name:fullName.split(" ")[0],last_name:fullName.split(" ")[1]})}}
                 />
               </div>
             </div>

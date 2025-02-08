@@ -49,5 +49,10 @@ export const useChatStore = create((set)=>({
       },
       setSelectedUser: (user:any)=>{
         set({selectedUser:user})
+      },
+      setMessages:(message:any)=>{
+         set((state:any)=>({
+          messages:[...state.messages,message]
+         }))
       }
 }))
