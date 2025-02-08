@@ -3,6 +3,7 @@ import json
 from channels.db import database_sync_to_async
 from .models import ChatModel,UserProfileModel, NotificationModel
 from django.contrib.auth import get_user_model
+from .serializers import ChatSerializer
 
 User = get_user_model()
 
@@ -29,12 +30,13 @@ class PersonalChatConsumer(AsyncJsonWebsocketConsumer):
         username = data['email']
         reciever = self.scope['url_route']['kwargs']['id']
         message = data['message']
-        await self.save_message(self.scope['user'], self.room_group_name, message, reciever)
+        messageObj = await self.save_message(self.scope['user'], self.room_group_name, message, reciever)
+        serialiser = ChatSerializer(messageObj)
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type':'chat_message',
-                'message':message,
+                'message':serialiser.data,
                 'username':username,
             }
         )
@@ -47,9 +49,9 @@ class PersonalChatConsumer(AsyncJsonWebsocketConsumer):
 
     async def chat_message(self,event):
         message = event['message']
-        # print(message)
+        encodedmessage = json.dumps(message)
 
-        await self.send(text_data=json.dumps({'message':message}))
+        await self.send(text_data=encodedmessage)
     
     @database_sync_to_async
     def save_message(self, user, thread_name, message, receiver):
@@ -60,6 +62,7 @@ class PersonalChatConsumer(AsyncJsonWebsocketConsumer):
         get_user = User.objects.get(id=other_user_id)
         if receiver == get_user.email:
             NotificationModel.objects.create(chat=chat_obj, user=get_user)
+        return chat_obj
 
 
 class NotificationConsumer(AsyncJsonWebsocketConsumer):
